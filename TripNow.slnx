@@ -1,0 +1,16 @@
+<Solution>
+  <Configurations>
+    <Platform Name="Any CPU" />
+    <Platform Name="x64" />
+    <Platform Name="x86" />
+  </Configurations>
+  <Folder Name="/src/">
+    <Project Path="src/TripNow.Api/TripNow.Api.csproj" />
+    <Project Path="src/TripNow.Application/TripNow.Application.csproj" />
+    <Project Path="src/TripNow.Domain/TripNow.Domain.csproj" />
+    <Project Path="src/TripNow.Infrastructure/TripNow.Infrastructure.csproj" />
+  </Folder>
+  <Folder Name="/tests/">
+    <Project Path="tests/TripNow.UnitTests/TripNow.UnitTests.csproj" />
+  </Folder>
+</Solution>
