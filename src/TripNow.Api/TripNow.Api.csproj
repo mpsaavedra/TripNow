@@ -7,12 +7,14 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <PackageReference Include="Aspire.Npgsql.EntityFrameworkCore.PostgreSQL" Version="13.1.0" />
     <PackageReference Include="Microsoft.AspNetCore.OpenApi" Version="10.0.1" />
   </ItemGroup>
 
   <ItemGroup>
     <ProjectReference Include="..\TripNow.Application\TripNow.Application.csproj" />
     <ProjectReference Include="..\TripNow.Infrastructure\TripNow.Infrastructure.csproj" />
+    <ProjectReference Include="..\TripNow.ServiceDefaults\TripNow.ServiceDefaults.csproj" />
   </ItemGroup>
 
 </Project>

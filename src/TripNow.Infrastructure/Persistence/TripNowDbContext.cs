@@ -19,10 +19,4 @@ public class TripNowDbContext : DbContext, IUnitOfWork
         base.OnModelCreating(modelBuilder);
         modelBuilder.ApplyConfigurationsFromAssembly(Assembly.GetExecutingAssembly());
     }
-    
-    // IUnitOfWork implementation is inherited from DbContext via SaveChangesAsync, 
-    // but strict signature match might be needed if interfaces differ in cancellation token default or something.
-    // IUnitOfWork defines: Task<int> SaveChangesAsync(CancellationToken cancellationToken = default);
-    // DbContext has: Task<int> SaveChangesAsync(CancellationToken cancellationToken = default);
-    // So it matches implicitly.
 }

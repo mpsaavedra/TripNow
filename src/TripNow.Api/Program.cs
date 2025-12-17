@@ -1,6 +1,12 @@
+using Microsoft.Extensions.Hosting;
+using TripNow.Infrastructure.Persistence;
+
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
+builder.AddServiceDefaults();
+builder.AddNpgsqlDbContext<TripNowDbContext>("tripnow-db");
+
 // Learn more about configuring OpenAPI at https://aka.ms/aspnet/openapi
 builder.Services.AddOpenApi();
 

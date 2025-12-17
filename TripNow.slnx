@@ -6,9 +6,11 @@
   </Configurations>
   <Folder Name="/src/">
     <Project Path="src/TripNow.Api/TripNow.Api.csproj" />
+    <Project Path="src/TripNow.AppHost/TripNow.AppHost.csproj" />
     <Project Path="src/TripNow.Application/TripNow.Application.csproj" />
     <Project Path="src/TripNow.Domain/TripNow.Domain.csproj" />
     <Project Path="src/TripNow.Infrastructure/TripNow.Infrastructure.csproj" />
+    <Project Path="src/TripNow.ServiceDefaults/TripNow.ServiceDefaults.csproj" />
   </Folder>
   <Folder Name="/tests/">
     <Project Path="tests/TripNow.UnitTests/TripNow.UnitTests.csproj" />
