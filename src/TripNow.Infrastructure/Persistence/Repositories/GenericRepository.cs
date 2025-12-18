@@ -19,33 +19,61 @@ public class GenericRepository<T> : IGenericRepository<T> where T : class
         _dbSet = context.Set<T>();
     }
 
-    public async Task<T?> GetByIdAsync(Guid id)
+    public async Task<T?> GetByIdAsync(Guid id, CancellationToken cancellation = default)
     {
-        return await _dbSet.FindAsync(id);
+        return await _dbSet.FindAsync(id, cancellation);
     }
 
-    public async Task<IEnumerable<T>> GetAllAsync()
+    public async Task<IEnumerable<T>> GetAllAsync(CancellationToken cancellation = default)
     {
-        return await _dbSet.ToListAsync();
+        return await _dbSet.ToListAsync(cancellation);
     }
 
-    public async Task AddAsync(T entity)
+    public async Task AddAsync(T entity, CancellationToken cancellation = default)
     {
-        await _dbSet.AddAsync(entity);
+        try
+        {
+            await _context.Database.BeginTransactionAsync(cancellation);
+            await _dbSet.AddAsync(entity, cancellation);
+            await _context.Database.CommitTransactionAsync(cancellation);
+        }
+        catch
+        {
+            await _context.Database.RollbackTransactionAsync(cancellation);
+        }
     }
 
-    public void Update(T entity)
+    public async Task UpdateAsync(T entity, CancellationToken cancellation = default)
     {
-        _dbSet.Update(entity);
+        try
+        { 
+            await _context.Database.BeginTransactionAsync(cancellation);
+            _dbSet.Update(entity);
+            await _context.Database.CommitTransactionAsync(cancellation);
+        }
+        catch
+        {
+            await _context.Database.RollbackTransactionAsync(cancellation);
+        }
+
     }
 
-    public void Remove(T entity)
+    public async Task RemoveAsync(T entity, CancellationToken cancellation = default)
     {
-        _dbSet.Remove(entity);
+        try
+        {
+            await _context.Database.BeginTransactionAsync(cancellation);
+            _dbSet.Remove(entity);
+            await _context.Database.CommitTransactionAsync(cancellation);
+        }
+        catch
+        {
+            await _context.Database.RollbackTransactionAsync(cancellation);
+        }
     }
 
-    public async Task<IEnumerable<T>> FindAsync(Expression<Func<T, bool>> predicate)
+    public async Task<IEnumerable<T>> FindAsync(Expression<Func<T, bool>> predicate, CancellationToken cancellation = default)
     {
-        return await _dbSet.Where(predicate).ToListAsync();
+        return await _dbSet.Where(predicate).ToListAsync(cancellation);
     }
 }

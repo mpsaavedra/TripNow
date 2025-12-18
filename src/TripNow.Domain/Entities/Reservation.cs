@@ -13,38 +13,44 @@ public class Reservation : TripNow.Domain.Common.BaseEntity
     public ReservationStatus Status { get; private set; }
     public DateTime CreatedAt { get; private set; }
     public DateTime? LastModifiedAt { get; private set; }
-    public string? RiskReason { get; private set; }
+    public string? RiskReason { get; private set; } = string.Empty;
 
     private Reservation() { }
 
     public Reservation(string customerEmail, string tripCountry, decimal amount)
     {
-        Id = Guid.NewGuid();
+        var id = Guid.NewGuid();
+        
+        Id = id;
         CustomerEmail = customerEmail;
         TripCountry = tripCountry;
         Amount = amount;
         Status = ReservationStatus.PendingRiskCheck;
         CreatedAt = DateTime.UtcNow;
 
-        AddDomainEvent(new ReservationCreated(Id, CustomerEmail, TripCountry, Amount));
+        AddDomainEvent(new ReservationCreated(id, customerEmail, tripCountry, amount));
     }
 
     public void Approve()
     {
         if (Status != ReservationStatus.PendingRiskCheck) return;
+
         var oldStatus = Status;
         Status = ReservationStatus.Approved;
         LastModifiedAt = DateTime.UtcNow;
+
         AddDomainEvent(new ReservationStatusChanged(Id, oldStatus, Status));
     }
 
     public void Reject(string reason)
     {
         if (Status != ReservationStatus.PendingRiskCheck) return;
+
         var oldStatus = Status;
         Status = ReservationStatus.Rejected;
         RiskReason = reason;
         LastModifiedAt = DateTime.UtcNow;
+
         AddDomainEvent(new ReservationStatusChanged(Id, oldStatus, Status, reason));
     }
 }

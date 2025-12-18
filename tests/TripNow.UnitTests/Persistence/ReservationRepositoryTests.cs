@@ -77,9 +77,9 @@ public class ReservationRepositoryTests
         using (var context = new TripNowDbContext(_options))
         {
             var repository = new ReservationRepository(context);
-            // Re-fetch to attach or just attach
             var toDelete = await repository.GetByIdAsync(reservation.Id);
-            repository.Remove(toDelete!);
+
+            await repository.RemoveAsync(toDelete!);
             await context.SaveChangesAsync();
         }
 

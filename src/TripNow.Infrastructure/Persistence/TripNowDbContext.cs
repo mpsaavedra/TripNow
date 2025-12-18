@@ -5,7 +5,7 @@ using TripNow.Domain.Interfaces;
 
 namespace TripNow.Infrastructure.Persistence;
 
-public class TripNowDbContext : DbContext, IUnitOfWork
+public class TripNowDbContext : DbContext
 {
     public DbSet<Reservation> Reservations { get; set; }
     public DbSet<Country> Countries { get; set; }
