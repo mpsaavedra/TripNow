@@ -1,11 +1,22 @@
 using Microsoft.Extensions.Hosting;
+using TripNow.Domain.Interfaces;
 using TripNow.Infrastructure.Persistence;
+using TripNow.Infrastructure.Persistence.Repositories;
+using Wolverine;
+using Wolverine.Http;
 
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
 builder.AddServiceDefaults();
 builder.AddNpgsqlDbContext<TripNowDbContext>("tripnow-db");
+
+builder.Services.AddScoped<IUnitOfWork, UnitOfWork>();
+builder.Services.AddScoped<IReservationRepository, ReservationRepository>();
+builder.Services.AddScoped<ICountryRepository, CountryRepository>();
+
+builder.Host.UseWolverine();
+builder.Services.AddWolverineHttp();
 
 // Learn more about configuring OpenAPI at https://aka.ms/aspnet/openapi
 builder.Services.AddOpenApi();
@@ -19,6 +30,7 @@ if (app.Environment.IsDevelopment())
 }
 
 app.UseHttpsRedirection();
+app.MapWolverineEndpoints();
 
 var summaries = new[]
 {

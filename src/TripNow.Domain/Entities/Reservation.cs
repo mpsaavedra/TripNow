@@ -11,8 +11,6 @@ public class Reservation : TripNow.Domain.Common.BaseEntity
     public string TripCountry { get; private set; }
     public decimal Amount { get; private set; }
     public ReservationStatus Status { get; private set; }
-    public DateTime CreatedAt { get; private set; }
-    public DateTime? LastModifiedAt { get; private set; }
     public string? RiskReason { get; private set; } = string.Empty;
 
     private Reservation() { }
@@ -26,7 +24,6 @@ public class Reservation : TripNow.Domain.Common.BaseEntity
         TripCountry = tripCountry;
         Amount = amount;
         Status = ReservationStatus.PendingRiskCheck;
-        CreatedAt = DateTime.UtcNow;
 
         AddDomainEvent(new ReservationCreated(id, customerEmail, tripCountry, amount));
     }
@@ -37,7 +34,6 @@ public class Reservation : TripNow.Domain.Common.BaseEntity
 
         var oldStatus = Status;
         Status = ReservationStatus.Approved;
-        LastModifiedAt = DateTime.UtcNow;
 
         AddDomainEvent(new ReservationStatusChanged(Id, oldStatus, Status));
     }
@@ -49,7 +45,6 @@ public class Reservation : TripNow.Domain.Common.BaseEntity
         var oldStatus = Status;
         Status = ReservationStatus.Rejected;
         RiskReason = reason;
-        LastModifiedAt = DateTime.UtcNow;
 
         AddDomainEvent(new ReservationStatusChanged(Id, oldStatus, Status, reason));
     }

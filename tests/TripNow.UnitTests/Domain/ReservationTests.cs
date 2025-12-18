@@ -40,7 +40,6 @@ public class ReservationTests
 
         // Assert
         reservation.Status.Should().Be(ReservationStatus.Approved);
-        reservation.LastModifiedAt.Should().BeCloseTo(DateTime.UtcNow, TimeSpan.FromSeconds(1));
         reservation.DomainEvents.Should().Contain(e => e is ReservationStatusChanged && ((ReservationStatusChanged)e).NewStatus == ReservationStatus.Approved);
     }
 

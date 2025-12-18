@@ -9,6 +9,8 @@
   <ItemGroup>
     <PackageReference Include="Aspire.Npgsql.EntityFrameworkCore.PostgreSQL" Version="13.1.0" />
     <PackageReference Include="Microsoft.AspNetCore.OpenApi" Version="10.0.1" />
+    <PackageReference Include="WolverineFx" Version="5.9.0" />
+    <PackageReference Include="WolverineFx.Http" Version="5.9.0" />
   </ItemGroup>
 
   <ItemGroup>

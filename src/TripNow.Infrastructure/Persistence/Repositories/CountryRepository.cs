@@ -5,7 +5,7 @@ namespace TripNow.Infrastructure.Persistence.Repositories;
 
 public class CountryRepository : GenericRepository<Country>, ICountryRepository
 {
-    public CountryRepository(TripNowDbContext context) : base(context)
+    public CountryRepository(TripNowDbContext context, IUnitOfWork unitOfWork) : base(context, unitOfWork)
     {
     }
 }

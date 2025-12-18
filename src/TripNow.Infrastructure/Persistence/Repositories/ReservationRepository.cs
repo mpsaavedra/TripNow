@@ -7,7 +7,7 @@ namespace TripNow.Infrastructure.Persistence.Repositories;
 
 public class ReservationRepository : GenericRepository<Reservation>, IReservationRepository
 {
-    public ReservationRepository(TripNowDbContext context) : base(context)
+    public ReservationRepository(TripNowDbContext context, IUnitOfWork unitOfWork) : base(context, unitOfWork)
     {
     }
 

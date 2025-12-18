@@ -7,17 +7,26 @@ using TripNow.Infrastructure.Persistence;
 using TripNow.Infrastructure.Persistence.Repositories;
 using Xunit;
 
+using Moq;
+using TripNow.Domain.Interfaces;
+using System.Threading;
+
 namespace TripNow.UnitTests.Persistence;
 
 public class ReservationRepositoryTests
 {
     private readonly DbContextOptions<TripNowDbContext> _options;
+    private readonly Mock<IUnitOfWork> _uowMock;
 
     public ReservationRepositoryTests()
     {
         _options = new DbContextOptionsBuilder<TripNowDbContext>()
-            .UseInMemoryDatabase(databaseName: Guid.NewGuid().ToString())
+            .UseInMemoryDatabase(Guid.NewGuid().ToString())
             .Options;
+        
+        _uowMock = new Mock<IUnitOfWork>();
+        _uowMock.Setup(u => u.ExecuteAsync(It.IsAny<Func<Task<bool>>>(), It.IsAny<CancellationToken>()))
+            .Returns<Func<Task<bool>>, CancellationToken>(async (op, ct) => await op());
     }
 
     [Fact]
@@ -25,7 +34,7 @@ public class ReservationRepositoryTests
     {
         // Arrange
         using var context = new TripNowDbContext(_options);
-        var repository = new ReservationRepository(context);
+        var repository = new ReservationRepository(context, _uowMock.Object);
         var reservation = new Reservation("test@test.com", "US", 100);
 
         // Act
@@ -53,7 +62,7 @@ public class ReservationRepositoryTests
         // Act
         using (var context = new TripNowDbContext(_options))
         {
-            var repository = new ReservationRepository(context);
+            var repository = new ReservationRepository(context, _uowMock.Object);
             var result = await repository.GetByIdAsync(reservation.Id);
 
             // Assert
@@ -76,17 +85,17 @@ public class ReservationRepositoryTests
         // Act
         using (var context = new TripNowDbContext(_options))
         {
-            var repository = new ReservationRepository(context);
+            var repository = new ReservationRepository(context, _uowMock.Object);
             var toDelete = await repository.GetByIdAsync(reservation.Id);
 
-            await repository.RemoveAsync(toDelete!);
+            await repository.Remove(toDelete!);
             await context.SaveChangesAsync();
         }
 
         // Assert
         using (var context = new TripNowDbContext(_options))
         {
-            var repository = new ReservationRepository(context);
+            var repository = new ReservationRepository(context, _uowMock.Object);
             var result = await repository.GetByIdAsync(reservation.Id);
             result.Should().BeNull();
         }
