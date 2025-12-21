@@ -1,7 +1,9 @@
 using Microsoft.Extensions.Hosting;
 using TripNow.Domain.Interfaces;
+using TripNow.Domain.Services;
 using TripNow.Infrastructure.Persistence;
 using TripNow.Infrastructure.Persistence.Repositories;
+using TripNow.Infrastructure.Services;
 using Wolverine;
 using Wolverine.Http;
 
@@ -14,6 +16,11 @@ builder.AddNpgsqlDbContext<TripNowDbContext>("tripnow-db");
 builder.Services.AddScoped<IUnitOfWork, UnitOfWork>();
 builder.Services.AddScoped<IReservationRepository, ReservationRepository>();
 builder.Services.AddScoped<ICountryRepository, CountryRepository>();
+
+builder.Services.AddHttpClient<IRiskEvaluationService, RiskEvaluationService>(client =>
+{
+    client.BaseAddress = new Uri("https://vuc42ahokh5whcd5r5in7tj2km0jvjxu.lambda-url.us-east-1.on.aws/swagger/index.html"); // Placeholder, will be configured via service discovery
+});
 
 builder.Host.UseWolverine();
 builder.Services.AddWolverineHttp();
