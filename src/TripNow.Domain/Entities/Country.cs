@@ -2,7 +2,7 @@ using System;
 
 namespace TripNow.Domain.Entities;
 
-public class Country : TripNow.Domain.Common.BaseEntity
+public class Country : Common.BaseEntity
 {
     public Guid Id { get; private set; }
     public string Name { get; private set; }

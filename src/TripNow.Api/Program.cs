@@ -1,4 +1,5 @@
 using Microsoft.Extensions.Hosting;
+using TripNow.Application.Features.Reservations.Create;
 using TripNow.Domain.Interfaces;
 using TripNow.Domain.Services;
 using TripNow.Infrastructure.Persistence;
@@ -22,41 +23,29 @@ builder.Services.AddHttpClient<IRiskEvaluationService, RiskEvaluationService>(cl
     client.BaseAddress = new Uri("https://vuc42ahokh5whcd5r5in7tj2km0jvjxu.lambda-url.us-east-1.on.aws/swagger/index.html"); // Placeholder, will be configured via service discovery
 });
 
-builder.Host.UseWolverine();
-builder.Services.AddWolverineHttp();
 
-// Learn more about configuring OpenAPI at https://aka.ms/aspnet/openapi
+builder.Services.AddWolverineHttp();
+builder.Host.UseWolverine(opts =>
+{
+    opts.Discovery.IncludeAssembly(typeof(TripNow.Application.Features.Reservations.Create.CreateReservationHandler).Assembly);
+});
+
 builder.Services.AddOpenApi();
+builder.Services.AddEndpointsApiExplorer();
+builder.Services.AddSwaggerGen();
 
 var app = builder.Build();
 
-// Configure the HTTP request pipeline.
 if (app.Environment.IsDevelopment())
 {
     app.MapOpenApi();
+    app.UseSwagger();
+    app.UseSwaggerUI();
 }
 
 app.UseHttpsRedirection();
 app.MapWolverineEndpoints();
 
-var summaries = new[]
-{
-    "Freezing", "Bracing", "Chilly", "Cool", "Mild", "Warm", "Balmy", "Hot", "Sweltering", "Scorching"
-};
-
-app.MapGet("/weatherforecast", () =>
-{
-    var forecast =  Enumerable.Range(1, 5).Select(index =>
-        new WeatherForecast
-        (
-            DateOnly.FromDateTime(DateTime.Now.AddDays(index)),
-            Random.Shared.Next(-20, 55),
-            summaries[Random.Shared.Next(summaries.Length)]
-        ))
-        .ToArray();
-    return forecast;
-})
-.WithName("GetWeatherForecast");
 
 app.Run();
 

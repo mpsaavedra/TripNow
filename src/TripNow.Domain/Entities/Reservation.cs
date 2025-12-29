@@ -4,7 +4,7 @@ using TripNow.Domain.Events;
 
 namespace TripNow.Domain.Entities;
 
-public class Reservation : TripNow.Domain.Common.BaseEntity
+public class Reservation : Common.BaseEntity
 {
     public Guid Id { get; private set; }
     public string CustomerEmail { get; private set; }

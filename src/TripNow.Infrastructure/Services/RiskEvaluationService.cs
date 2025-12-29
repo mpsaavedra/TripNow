@@ -1,8 +1,5 @@
-﻿using Microsoft.Extensions.Logging;
-using Polly;
+﻿using Polly;
 using Polly.CircuitBreaker;
-using System;
-using System.Collections.Generic;
 using System.Net;
 using System.Text;
 using System.Text.Json;
@@ -27,7 +24,7 @@ public class RiskEvaluationService : IRiskEvaluationService
             .WaitAndRetryAsync(
                 retryCount: 3,
                 sleepDurationProvider: retryAttempt => TimeSpan.FromSeconds(Math.Pow(2, retryAttempt)),
-                onRetry: (outcome, timespan, retryCount, context) =>
+                onRetry: (_, _, _, _) =>
                 {
                     // TODO: do some logging
                 })
@@ -37,7 +34,7 @@ public class RiskEvaluationService : IRiskEvaluationService
                     .CircuitBreakerAsync(
                         handledEventsAllowedBeforeBreaking: 5,
                         durationOfBreak: TimeSpan.FromSeconds(30),
-                        onBreak: (result, duration) =>
+                        onBreak: (_, _) =>
                         {
                             // TODO: do some logging
                         },
@@ -83,10 +80,6 @@ public class RiskEvaluationService : IRiskEvaluationService
         {
             throw new InvalidOperationException("Risk evaluation service is temporarily unavailable");
         }
-        catch
-        {
-            throw;
-        }
     }
 
     private ReservationStatus AsReservationStatus(string score) =>
@@ -95,6 +88,6 @@ public class RiskEvaluationService : IRiskEvaluationService
             "PENDING_RISK_CHECK" => ReservationStatus.PendingRiskCheck,
             "APPROVED" => ReservationStatus.Approved,
             "REJECTED" => ReservationStatus.Rejected,
-            _ => throw new ArgumentOutOfRangeException(nameof(score), $"Estado desconocido: {score}")
+            _ => throw new ArgumentOutOfRangeException(nameof(score), $"Unknown status: {score}")
         };
 }

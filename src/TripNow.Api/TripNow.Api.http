@@ -1,6 +1,10 @@
 @TripNow.Api_HostAddress = http://localhost:5199
 
-GET {{TripNow.Api_HostAddress}}/weatherforecast/
+POST {{TripNow.Api_HostAddress}}/reservations/
 Accept: application/json
-
+{
+  "CustomerEmail": "test@test.com",
+  "TripCountry" : "Cuba",
+  "Amount": 100.00
+}
 ###
