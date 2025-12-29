@@ -12,13 +12,11 @@ public class GenericRepository<T> : IGenericRepository<T> where T : class
 {
     protected readonly TripNowDbContext _context;
     protected readonly DbSet<T> _dbSet;
-    protected readonly IUnitOfWork _unitOfWork;
 
-    public GenericRepository(TripNowDbContext context, IUnitOfWork unitOfWork)
+    public GenericRepository(TripNowDbContext context)
     {
         _context = context;
         _dbSet = context.Set<T>();
-        _unitOfWork = unitOfWork;
     }
 
     public async Task<T?> GetByIdAsync(Guid id, CancellationToken cancellation = default)
@@ -33,29 +31,19 @@ public class GenericRepository<T> : IGenericRepository<T> where T : class
 
     public async Task AddAsync(T entity, CancellationToken cancellation = default)
     {
-        await _unitOfWork.ExecuteAsync(async () =>
-    {
-            await _dbSet.AddAsync(entity, cancellation);
-            return true;
-        }, cancellation);
+        await _dbSet.AddAsync(entity, cancellation);
     }
 
-    public async Task Update(T entity)
+    public Task Update(T entity)
     {
-        await _unitOfWork.ExecuteAsync(async () =>
-        {
-            await Task.Run(() => _dbSet.Update(entity));
-            return true;
-        });
+        _dbSet.Update(entity);
+        return Task.CompletedTask;
     }
 
-    public async Task Remove(T entity)
+    public Task Remove(T entity)
     {
-        await _unitOfWork.ExecuteAsync(async () =>
-        {
-            _dbSet.Remove(entity);
-            return true;
-        });
+        _dbSet.Remove(entity);
+        return Task.CompletedTask;
     }
 
     public async Task<IEnumerable<T>> FindAsync(Expression<Func<T, bool>> predicate, CancellationToken cancellation = default)

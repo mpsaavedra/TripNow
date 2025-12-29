@@ -17,12 +17,5 @@ public class CountryConfiguration : IEntityTypeConfiguration<Country>
         builder.Property(c => c.RiskCode)
             .IsRequired()
             .HasMaxLength(50);
-            
-        builder.HasData(
-            new Country("United States", "US"),
-            new Country("Canada", "CA"),
-            new Country("Mexico", "MX"),
-            new Country("France", "FR")
-        );
     }
 }

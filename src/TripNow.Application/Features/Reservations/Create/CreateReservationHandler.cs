@@ -22,12 +22,6 @@ public class CreateReservationHandler
     [WolverinePost("/reservations")]
     public async Task<ReservationCreatedResponse> Handle(CreateReservation command, CancellationToken ct)
     {
-        // Simple idempotency check can be added here if needed, or rely on frontend providing ID.
-        // For requirement C "Idempotency": "If create happens twice... result must be consistent."
-        // Often this implies providing an Id or having a way to dedupe. User requirement says input has: customerEmail, tripCountry, amount.
-        // It doesn't explicitly mention client-generated ID.
-        // However, we can check if there's a recent pending reservation for same user/country/amount?
-        
         var existing = await _repository.GetByCustomerEmailAndTripAsync(command.CustomerEmail, command.TripCountry, command.Amount, ct);
         if (existing != null && existing.Status == Domain.Enums.ReservationStatus.PendingRiskCheck)
         {

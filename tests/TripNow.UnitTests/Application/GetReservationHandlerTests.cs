@@ -29,10 +29,8 @@ public class GetReservationHandlerTests
         _repositoryMock.Setup(r => r.GetByIdAsync(reservation.Id, It.IsAny<CancellationToken>()))
             .ReturnsAsync(reservation);
 
-        var query = new GetReservation(reservation.Id);
-
         // Act
-        var result = await _handler.Handle(query, CancellationToken.None);
+        var result = await _handler.Handle(reservation.Id, _repositoryMock.Object, CancellationToken.None);
 
         // Assert
         result.Should().NotBeNull();
@@ -47,10 +45,8 @@ public class GetReservationHandlerTests
         _repositoryMock.Setup(r => r.GetByIdAsync(id, It.IsAny<CancellationToken>()))
             .ReturnsAsync((Reservation?)null);
 
-        var query = new GetReservation(id);
-
         // Act
-        var result = await _handler.Handle(query, CancellationToken.None);
+        var result = await _handler.Handle(id, _repositoryMock.Object, CancellationToken.None);
 
         // Assert
         result.Should().BeNull();

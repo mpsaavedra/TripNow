@@ -18,9 +18,9 @@ public class GetReservationHandler
         _repository = repository;
     }
 
-    [WolverineGet("/reservations/{Id}")]
-    public async Task<Reservation?> Handle(GetReservation query, CancellationToken ct)
+    [WolverineGet("/reservations/{id}")]
+    public async Task<Reservation?> Handle(Guid id, IReservationRepository repository, CancellationToken ct)
     {
-        return await _repository.GetByIdAsync(query.Id, ct);
+        return await repository.GetByIdAsync(id, ct);
     }
 }

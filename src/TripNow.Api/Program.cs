@@ -1,3 +1,4 @@
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Hosting;
 using TripNow.Application.Features.Reservations.Create;
 using TripNow.Domain.Interfaces;
@@ -41,6 +42,10 @@ if (app.Environment.IsDevelopment())
     app.MapOpenApi();
     app.UseSwagger();
     app.UseSwaggerUI();
+
+    using var scope = app.Services.CreateScope();
+    var dbContext = scope.ServiceProvider.GetRequiredService<TripNowDbContext>();
+    await dbContext.Database.MigrateAsync();
 }
 
 app.UseHttpsRedirection();
@@ -48,8 +53,3 @@ app.MapWolverineEndpoints();
 
 
 app.Run();
-
-record WeatherForecast(DateOnly Date, int TemperatureC, string? Summary)
-{
-    public int TemperatureF => 32 + (int)(TemperatureC / 0.5556);
-}
