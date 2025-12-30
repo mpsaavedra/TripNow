@@ -10,11 +10,13 @@ namespace TripNow.Application.Features.Reservations.Create;
 public class CreateReservationHandler
 {
     private readonly IReservationRepository _repository;
+    private readonly ICountryRepository _countryRepository;
     private readonly IUnitOfWork _unitOfWork;
 
-    public CreateReservationHandler(IReservationRepository repository, IUnitOfWork unitOfWork)
+    public CreateReservationHandler(IReservationRepository repository, ICountryRepository countryRepository, IUnitOfWork unitOfWork)
     {
         _repository = repository;
+        _countryRepository = countryRepository;
         _unitOfWork = unitOfWork;
     }
 

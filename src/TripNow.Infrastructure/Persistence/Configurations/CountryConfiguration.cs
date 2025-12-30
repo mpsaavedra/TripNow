@@ -14,7 +14,7 @@ public class CountryConfiguration : IEntityTypeConfiguration<Country>
             .IsRequired()
             .HasMaxLength(150);
 
-        builder.Property(c => c.RiskCode)
+        builder.Property(c => c.Status)
             .IsRequired()
             .HasMaxLength(50);
     }
