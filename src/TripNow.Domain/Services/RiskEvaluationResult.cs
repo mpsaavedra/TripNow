@@ -4,7 +4,7 @@ namespace TripNow.Domain.Services;
 
 public class RiskEvaluationBaseResult
 {
-    public string RiskScore { get; set; } = string.Empty;
+    public double RiskScore { get; set; }
     public string? RejectionReason { get; set; }
 }
 

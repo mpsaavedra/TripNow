@@ -12,14 +12,16 @@ namespace TripNow.UnitTests.Application;
 public class CreateReservationHandlerTests
 {
     private readonly Mock<IReservationRepository> _repositoryMock;
+    private readonly Mock<ICountryRepository> _countryRepositoryMock;
     private readonly Mock<IUnitOfWork> _uowMock;
     private readonly CreateReservationHandler _handler;
 
     public CreateReservationHandlerTests()
     {
         _repositoryMock = new Mock<IReservationRepository>();
+        _countryRepositoryMock = new Mock<ICountryRepository>();
         _uowMock = new Mock<IUnitOfWork>();
-        _handler = new CreateReservationHandler(_repositoryMock.Object, _uowMock.Object);
+        _handler = new CreateReservationHandler(_repositoryMock.Object, _countryRepositoryMock.Object, _uowMock.Object);
     }
 
     [Fact]

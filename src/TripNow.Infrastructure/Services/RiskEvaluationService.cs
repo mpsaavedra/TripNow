@@ -1,10 +1,12 @@
-﻿using Polly;
+﻿using Microsoft.Extensions.Logging;
+using Polly;
 using Polly.CircuitBreaker;
 using System.Net;
 using System.Text;
 using System.Text.Json;
 using TripNow.Domain.Enums;
 using TripNow.Domain.Services;
+using TripNow.Infrastructure.Extensions;
 
 namespace TripNow.Infrastructure.Services;
 
@@ -12,8 +14,14 @@ public class RiskEvaluationService : IRiskEvaluationService
 {
     private readonly HttpClient _httpClient;
     private readonly IAsyncPolicy<HttpResponseMessage> _policy;
+    private static readonly JsonSerializerOptions _jsonOptions = new()
+    {
+        PropertyNameCaseInsensitive = true
+    };
+    private readonly ILogger<RiskEvaluationService> _logger;
 
-    public RiskEvaluationService(HttpClient httpClient)
+
+    public RiskEvaluationService(HttpClient httpClient, ILogger<RiskEvaluationService> logger)
     {
         _httpClient = httpClient;
         // configure Polly for resiliency
@@ -48,13 +56,17 @@ public class RiskEvaluationService : IRiskEvaluationService
 
     public async Task<RiskEvaluationResult> EvaluateAsync(RiskEvaluationRequest request, CancellationToken cancellationToken = default)
     {
+        _logger.LogInformation("Starting risk evaluation for customer {CustomerEmail}", request.CustomerEmail);
         try
         {
             var json = JsonSerializer.Serialize(request);
             var content = new StringContent(json, Encoding.UTF8, "application/json");
 
             var response = await _policy.ExecuteAsync(() =>
-                _httpClient.PostAsync("/risk-evaluation", content, cancellationToken));
+            {
+                _logger.LogDebug("Sending risk evaluation request to external service");
+                return _httpClient.PostAsync("/risk-evaluation", content, cancellationToken);
+            });
 
             if (response.StatusCode == HttpStatusCode.ServiceUnavailable)
             {
@@ -67,13 +79,13 @@ public class RiskEvaluationService : IRiskEvaluationService
             }
 
             var responseContent = await response.Content.ReadAsStringAsync(cancellationToken);
-            var result = JsonSerializer.Deserialize<RiskEvaluationServiceResult>(responseContent);
+            var result = JsonSerializer.Deserialize<RiskEvaluationServiceResult>(responseContent, _jsonOptions);
 
             return new RiskEvaluationResult
             {
                 RiskScore = result!.RiskScore,
                 RejectionReason = result.RejectionReason,
-                Status = AsReservationStatus(result.Status),
+                Status = result.Status.AsReservationStatus(),
             };
         }
         catch (BrokenCircuitException)
@@ -82,12 +94,5 @@ public class RiskEvaluationService : IRiskEvaluationService
         }
     }
 
-    private ReservationStatus AsReservationStatus(string score) =>
-        score.Trim().ToUpperInvariant() switch
-        {
-            "PENDING_RISK_CHECK" => ReservationStatus.PendingRiskCheck,
-            "APPROVED" => ReservationStatus.Approved,
-            "REJECTED" => ReservationStatus.Rejected,
-            _ => throw new ArgumentOutOfRangeException(nameof(score), $"Unknown status: {score}")
-        };
+    
 }

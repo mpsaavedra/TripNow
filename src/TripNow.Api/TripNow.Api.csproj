@@ -17,6 +17,8 @@
     <PackageReference Include="Swashbuckle.AspNetCore.SwaggerUI" Version="10.1.0" />
     <PackageReference Include="WolverineFx" Version="5.9.0" />
     <PackageReference Include="WolverineFx.Http" Version="5.9.0" />
+    <PackageReference Include="Hangfire.AspNetCore" Version="1.8.21" />
+    <PackageReference Include="Hangfire.PostgreSql" Version="1.20.12" />
   </ItemGroup>
 
   <ItemGroup>
