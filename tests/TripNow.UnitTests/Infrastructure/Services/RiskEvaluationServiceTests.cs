@@ -1,6 +1,7 @@
 using System.Net;
 using System.Text;
 using System.Text.Json;
+using Microsoft.Extensions.Logging;
 using Moq;
 using Moq.Protected;
 using TripNow.Domain.Enums;
@@ -65,7 +66,8 @@ public class RiskEvaluationServiceTests
             BaseAddress = new Uri("http://test-service")
         };
 
-        var service = new RiskEvaluationService(httpClient);
+        var loggerMock = new Mock<ILogger<RiskEvaluationService>>();
+        var service = new RiskEvaluationService(httpClient, loggerMock.Object);
         var request = new RiskEvaluationRequest 
         {
             CustomerEmail = "test@example.com",

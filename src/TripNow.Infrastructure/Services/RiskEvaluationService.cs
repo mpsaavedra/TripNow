@@ -24,6 +24,7 @@ public class RiskEvaluationService : IRiskEvaluationService
     public RiskEvaluationService(HttpClient httpClient, ILogger<RiskEvaluationService> logger)
     {
         _httpClient = httpClient;
+        _logger = logger;
         // configure Polly for resiliency
         _policy = Policy
             .HandleResult<HttpResponseMessage>(r => !r.IsSuccessStatusCode)
@@ -32,9 +33,10 @@ public class RiskEvaluationService : IRiskEvaluationService
             .WaitAndRetryAsync(
                 retryCount: 3,
                 sleepDurationProvider: retryAttempt => TimeSpan.FromSeconds(Math.Pow(2, retryAttempt)),
-                onRetry: (_, _, _, _) =>
+                onRetry: (outcome, timespan, retryAttempt, context) =>
                 {
-                    // TODO: do some logging
+                    _logger.LogWarning("Delaying for {Delay}ms, then making retry {RetryAttempt}. Error: {Message}", 
+                        timespan.TotalMilliseconds, retryAttempt, outcome.Exception?.Message ?? outcome.Result?.ReasonPhrase);
                 })
             .WrapAsync(
                 Policy<HttpResponseMessage>
@@ -42,13 +44,14 @@ public class RiskEvaluationService : IRiskEvaluationService
                     .CircuitBreakerAsync(
                         handledEventsAllowedBeforeBreaking: 5,
                         durationOfBreak: TimeSpan.FromSeconds(30),
-                        onBreak: (_, _) =>
+                        onBreak: (outcome, timespan) =>
                         {
-                            // TODO: do some logging
+                            _logger.LogError("Circuit broken for {Delay}ms due to: {Message}", 
+                                timespan.TotalMilliseconds, outcome.Exception?.Message ?? outcome.Result?.ReasonPhrase);
                         },
                         onReset: () =>
                         {
-                            // TODO: do some logging
+                            _logger.LogInformation("Circuit reset");
                         }))
             .WrapAsync(
                 Policy.TimeoutAsync<HttpResponseMessage>(TimeSpan.FromSeconds(10)));

@@ -1,0 +1,15 @@
+{
+  "/api": {
+    "target": "https://localhost:7097",
+    "secure": false,
+    "changeOrigin": true,
+    "pathRewrite": {
+      "^/api": ""
+    }
+  },
+  "/reservationhub": {
+    "target": "https://localhost:7097",
+    "secure": false,
+    "ws": true
+  }
+}
